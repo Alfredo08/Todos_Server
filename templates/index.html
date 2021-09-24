@@ -26,9 +26,15 @@
                 </label>
                 <input type="password" id="userPassword" name="userPassword" />
             </div>
+            <input type="hidden" name="identifier" id="identifier" value="123" />
             <button type="submit">
                 Login
             </button>
         </form>
+        {% if loginError != "": %}
+            <div>
+                {{loginError}}
+            </div>
+        {% endif %}
     </body>
 </html>

@@ -53,30 +53,44 @@ todos = {
 
 @app.route( "/login", methods=['GET'] )
 def displayLogin():
-    return render_template( "index.html" )
+    loginError = ""
+    if 'loginError' in session:
+        loginError = session['loginError']
+    return render_template( "index.html", loginError=loginError )
 
 @app.route( "/home", methods=['GET'] )
 def displayHome():
-    userName = session['userName']
-
-    currentUserTodos = todos[ userName ]
-    print( currentUserTodos )
-
-    #if session['userName']:
-    #    return render_template( "home.html" )
-    #else:
-    return render_template( "home.html", todos=currentUserTodos )
+    if 'userName' in session:
+        userName = session['userName']
+        currentUserTodos = todos[ userName ]
+        print( currentUserTodos )
+        return render_template( "home.html", todos=currentUserTodos )
+    else:
+        return render_template( "index.html" )
 
 @app.route( "/authentication", methods=['POST'] )
 def validateCredentials():
     userName = request.form['userName']
     userPassword = request.form['userPassword']
+    identifier = request.form['identifier']
+    print( 'Identifier', identifier )
     for user in users:
         if user['username'] == userName and user['password'] == userPassword:
             session['userName'] = userName
+            if 'loginError' in session:
+                session.pop( 'loginError' )
             return redirect( '/home' )
-    # Cover the scenario were the credentials are invalid
+    session['loginError'] = "Wrong credentials provided."
     return redirect( '/login' )
+
+@app.route( "/logout", methods=['GET'] )
+def closeSession():
+    session.clear()
+    responseObj = {
+        'message' : 'logout successfully'
+    }
+    return responseObj
+    #return redirect( '/login' )
 
 if __name__ == "__main__":
     app.run( debug = True )

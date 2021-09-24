@@ -18,5 +18,10 @@
                 Todo: {{todo['todo']}} Completed: {{todo['completed']}}
             </p>
         {% endfor %}
+        <button class="logout">
+            Logout
+        </button>
+
+        <script src="{{ url_for('static', filename='js/home.js') }}"></script>
     </body>
 </html>
