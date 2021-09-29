@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
+from User import User
 
 app = Flask( __name__ )
 app.secret_key = "secret"
@@ -91,6 +92,12 @@ def closeSession():
     }
     return responseObj
     #return redirect( '/login' )
+
+@app.route( "/users", methods=['GET'] )
+def getAllUsers():
+    users = User.get_all_users()
+    print( users )
+    return render_template( "users.html", users=users )
 
 if __name__ == "__main__":
     app.run( debug = True )
