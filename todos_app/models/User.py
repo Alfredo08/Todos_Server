@@ -1,4 +1,4 @@
-from MySQLConnection import connectToMySQL
+from todos_app.config.MySQLConnection import connectToMySQL
 
 class User:
     def __init__( self, username, password ):

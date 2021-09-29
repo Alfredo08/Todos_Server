@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request, redirect, session
-from User import User
+from todos_app import app
+from todos_app.controllers import users_controller
 
-app = Flask( __name__ )
-app.secret_key = "secret"
 
 users = [
     {
@@ -93,11 +92,6 @@ def closeSession():
     return responseObj
     #return redirect( '/login' )
 
-@app.route( "/users", methods=['GET'] )
-def getAllUsers():
-    users = User.get_all_users()
-    print( users )
-    return render_template( "users.html", users=users )
 
 if __name__ == "__main__":
     app.run( debug = True )
