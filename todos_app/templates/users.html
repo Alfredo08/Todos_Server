@@ -15,5 +15,35 @@
                 {{user['password']}}
             </h2>
         {% endfor %}
+
+        <form action="/users/add" method="POST">
+            <div>
+                <label for="username">
+                    Username: 
+                </label>
+                <input type="text" id="username" name="username" />
+            </div>
+            <div>
+                <label for="password">
+                    Password: 
+                </label>
+                <input type="password" id="password" name="password" />
+            </div>
+            <button type="submit">
+                Add user
+            </button>
+        </form>
+
+        <form action="/users/delete" method="POST">
+            <div>
+                <label for="deleteUsername">
+                    Username: 
+                </label>
+                <input type="text" id="deleteUsername" name="deleteUsername" />
+            </div>
+            <button type="submit">
+                Delete user
+            </button>
+        </form>
     </body>
 </html>
