@@ -1,9 +1,11 @@
 from todos_app.config.MySQLConnection import connectToMySQL
+from todos_app.models.Todo import Todo
 
 class User:
     def __init__( self, username, password ):
         self.username = username
         self.password = password
+        self.todos = []
     
     def printInfo( self ):
         print(f"username: {self.username} password: {self.password} ")
@@ -47,3 +49,24 @@ class User:
         }
         result = connectToMySQL( "todos_db" ).query_db( query, data )
         return result
+    
+    @classmethod
+    def get_all_users_with_todos( cls ):
+        query = "SELECT * FROM users JOIN todos ON users.username = todos.username;"
+        results = connectToMySQL( "todos_db" ).query_db( query )
+        users = []
+        for row in results:
+            index = findUserInArray( users, row['username'] )
+            if index == -1:
+                newUser = User( row['username'], row['password'] )
+                newUser.todos.append( Todo( row['todo_id'], row['todo'], row['completed'], row['username'] ))
+                users.append( newUser )
+            else:
+                users[index].todos.append( Todo( row['todo_id'], row['todo'], row['completed'], row['username'] ))
+        return users
+
+def findUserInArray( users, username ):
+    for i in range(0, len(users), 1 ):
+        if users[i].username == username:
+            return i
+    return -1

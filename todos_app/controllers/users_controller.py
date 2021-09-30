@@ -7,6 +7,11 @@ def getAllUsers():
     users = User.get_all_users()
     return render_template( "users.html", users=users )
 
+@app.route( "/users/todos", methods=['GET'] )
+def getAllUsersWithTodos():
+    results = User.get_all_users_with_todos()
+    return render_template( "fullusers.html", users=results )
+
 @app.route( "/users/add", methods=['POST'] )
 def addUser():
     username = request.form['username']
