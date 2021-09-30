@@ -37,3 +37,13 @@ class User:
         }
         result = connectToMySQL( "todos_db" ).query_db( query, data )
         return( result )
+    
+    @classmethod
+    def get_user_to_validate( cls, username, password ):
+        query = "SELECT * FROM users WHERE username=%(username)s AND password=%(password)s;"
+        data = {
+            "username" : username,
+            "password" : password
+        }
+        result = connectToMySQL( "todos_db" ).query_db( query, data )
+        return result
