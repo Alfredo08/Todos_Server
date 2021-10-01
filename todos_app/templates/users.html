@@ -7,6 +7,10 @@
         <title>Users information</title>
     </head>
     <body>
+        <h1>
+            {{counter}}
+        </h1>
+
         {% for user in users: %}
             <h1>
                 {{user['username']}}
@@ -34,6 +38,18 @@
             </button>
         </form>
 
+        <div class="errorMessages">
+            {% with messages = get_flashed_messages() %}
+                {% if messages: %}
+                    {% for message in messages: %}
+                        <p>
+                            {{message}}
+                        </p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
         <form action="/users/delete" method="POST">
             <div>
                 <label for="deleteUsername">
@@ -45,5 +61,6 @@
                 Delete user
             </button>
         </form>
+        
     </body>
 </html>

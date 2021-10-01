@@ -1,3 +1,4 @@
+from flask import flash
 from todos_app.config.MySQLConnection import connectToMySQL
 from todos_app.models.Todo import Todo
 
@@ -41,13 +42,13 @@ class User:
         return( result )
     
     @classmethod
-    def get_user_to_validate( cls, username, password ):
-        query = "SELECT * FROM users WHERE username=%(username)s AND password=%(password)s;"
+    def get_user_to_validate( cls, username ):
+        query = "SELECT * FROM users WHERE username=%(username)s;"
         data = {
-            "username" : username,
-            "password" : password
+            "username" : username
         }
         result = connectToMySQL( "todos_db" ).query_db( query, data )
+
         return result
     
     @classmethod
@@ -65,8 +66,21 @@ class User:
                 users[index].todos.append( Todo( row['todo_id'], row['todo'], row['completed'], row['username'] ))
         return users
 
+    @staticmethod
+    def validate_user_password( username, password ):
+        isValid = True
+        if len( username ) < 5:
+            flash( "Username must be at least 5 characters long" )
+            isValid = False 
+        if len( password ) < 5:
+            flash( "Password must be at least 5 characters long")
+            isValid = False
+        return isValid
+
 def findUserInArray( users, username ):
     for i in range(0, len(users), 1 ):
         if users[i].username == username:
             return i
     return -1
+
+

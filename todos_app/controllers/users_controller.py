@@ -1,11 +1,14 @@
 from flask import render_template, request, redirect, session
+from flask_bcrypt import Bcrypt
 from todos_app import app
 from todos_app.models.User import User
+
+bcrypt = Bcrypt(app)
 
 @app.route( "/users", methods=['GET'] )
 def getAllUsers():
     users = User.get_all_users()
-    return render_template( "users.html", users=users )
+    return render_template( "users.html", users=users, counter=session['counter'] )
 
 @app.route( "/users/todos", methods=['GET'] )
 def getAllUsersWithTodos():
@@ -17,10 +20,15 @@ def addUser():
     username = request.form['username']
     password = request.form['password']
 
-    newUser = User( username, password )
-    result = User.add_user( newUser )
-    print( result )
-    return redirect( "/users" )
+    if User.validate_user_password( username, password ):
+        encryptedPassword = bcrypt.generate_password_hash( password )
+        newUser = User( username, encryptedPassword )
+        result = User.add_user( newUser )
+        print( result )
+        return redirect( "/users" )
+    else:
+        print( "Something went wrong" )
+        return redirect( "/users" )
 
 @app.route( "/users/delete", methods=['POST'] )
 def deleteUser():
@@ -43,13 +51,19 @@ def validateCredentials():
     identifier = request.form['identifier']
     print( 'Identifier', identifier )
 
-    result = User.get_user_to_validate( userName, userPassword )
+    result = User.get_user_to_validate( userName )
 
     if len( result ) == 1:
-        session['userName'] = userName
-        if 'loginError' in session:
-            session.pop( 'loginError' )
-        return redirect( '/home' )
+        encryptedPassword = result[0]['password']
+
+        if bcrypt.check_password_hash( encryptedPassword, userPassword ):
+            session['userName'] = userName
+            if 'loginError' in session:
+                session.pop( 'loginError' )
+            return redirect( '/home' )
+        else:
+            session['loginError'] = "Wrong credentials provided."
+            return redirect( '/login' )
     else:
         session['loginError'] = "Wrong credentials provided."
         return redirect( '/login' )
