@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, jsonify, json
 from flask_bcrypt import Bcrypt
 from todos_app import app
 from todos_app.models.User import User
@@ -8,7 +8,9 @@ bcrypt = Bcrypt(app)
 @app.route( "/users", methods=['GET'] )
 def getAllUsers():
     users = User.get_all_users()
-    return render_template( "users.html", users=users, counter=session['counter'] )
+    
+    #return jsonify( data ), 404
+    return render_template( "users.html", users=users )
 
 @app.route( "/users/todos", methods=['GET'] )
 def getAllUsersWithTodos():
@@ -76,3 +78,19 @@ def closeSession():
     }
     return responseObj
     #return redirect( '/login' )
+
+@app.route( "/api/users", methods=['GET'] )
+def apiGetUsers():
+    users = User.get_all_users( True )
+    return jsonify( users ), 202
+
+@app.route( "/api/users/delete/<username>", methods=['DELETE'] )
+def apiDeleteUser( username ):
+    print( request.data )
+    print( request.data.decode('UTF-8') )
+    usernameBody = json.loads(request.data.decode('UTF-8'))
+    print( usernameBody['username'] ) 
+    result = User.delete_user( username )
+    if result == False:
+        return {}, 406
+    return jsonify( result ), 204

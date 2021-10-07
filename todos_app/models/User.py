@@ -12,15 +12,18 @@ class User:
         print(f"username: {self.username} password: {self.password} ")
 
     @classmethod
-    def get_all_users( cls ):
+    def get_all_users( cls, flag = False ):
         query = "SELECT * FROM users;"
         results = connectToMySQL( "todos_db" ).query_db( query )
-
-        users = []
-        for user in results:
-            users.append( User( user['username'], user['password']) )
         
-        return users
+        if flag == True:
+            return results
+        else:
+            users = []
+            for user in results:
+                users.append( User( user['username'], user['password']) )
+            
+            return users
     
     @classmethod
     def add_user( cls, newUser ):
@@ -39,6 +42,7 @@ class User:
             "username": username
         }
         result = connectToMySQL( "todos_db" ).query_db( query, data )
+        print( result )
         return( result )
     
     @classmethod
