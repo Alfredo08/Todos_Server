@@ -70,6 +70,12 @@ class User:
                 users[index].todos.append( Todo( row['todo_id'], row['todo'], row['completed'], row['username'] ))
         return users
 
+    @classmethod
+    def update_user_password( cls, data ):
+        query = "UPDATE users SET password=%(password)s WHERE username=%(username)s;"
+        results = connectToMySQL( "todos_db" ).query_db( query, data )
+        return results
+
     @staticmethod
     def validate_user_password( username, password ):
         isValid = True

@@ -94,3 +94,31 @@ def apiDeleteUser( username ):
     if result == False:
         return {}, 406
     return jsonify( result ), 204
+
+@app.route( "/api/users/add", methods=['POST'] )
+def apiAddUser():
+    print( request.form )
+    username = request.form['userName']
+    password = request.form['userPassword']
+    encryptedPassword = bcrypt.generate_password_hash( password )
+    newUser = User( username, encryptedPassword )
+    result = User.add_user( newUser )
+    # If username is duplicated send back a message with an error
+    data = {
+        "username" : username,
+        "password" : password
+    }
+    return jsonify( data ), 201
+
+@app.route( "/api/users/update", methods=['PUT'] )
+def apiUpdateUserPassword():
+    usernameBody = json.loads(request.data.decode('UTF-8'))
+    print( usernameBody )
+    encryptedPassword = bcrypt.generate_password_hash( usernameBody['password'] )
+    data = {
+        "password" : encryptedPassword,
+        "username" : usernameBody['username']
+    }
+    result = User.update_user_password( data )
+    # If username doesn't exists, we need to send another message possibly with an error status code
+    return jsonify( {"message" : "user password updated"} ), 202
